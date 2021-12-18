@@ -1,0 +1,4 @@
+branches: 90
+check-coverage: true
+coverage: true
+jobs: 1
