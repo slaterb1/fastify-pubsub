@@ -15,6 +15,6 @@
   "scripts": {
     "test": "tap \"test/*.test.js\""
   },
-  "author": "Benjamin Slater",
+  "author": "Benjamin Slater <benjamin.ed.slater@gmail.com>",
   "license": "MIT"
 }
