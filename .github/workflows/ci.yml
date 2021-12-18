@@ -8,21 +8,21 @@ jobs:
       matrix:
         node-versions: [10, 12, 14]
         redis-tag: [5, 6]
-        services:
-          redis:
-            image: redis:${{ matrix.redis-tag }}
-            ports:
-              - 6379:6379
-            steps:
-              - uses: actions/checkout@v2
+      services:
+        redis:
+          image: redis:${{ matrix.redis-tag }}
+          ports:
+          - 6379:6379
+          steps:
+            - uses: actions/checkout@v2
 
-              - name: setup node instance
-                uses: actions/setup-node@v2
-                with:
-                  node-version: ${{ matrix.node-version }}
+            - name: setup node instance
+              uses: actions/setup-node@v2
+              with:
+                node-version: ${{ matrix.node-version }}
 
-              - name: install packages
-                run: npm i
+            - name: install packages
+              run: npm i
 
-              - name: run tests
-                run: npm test
+            - name: run tests
+              run: npm test
