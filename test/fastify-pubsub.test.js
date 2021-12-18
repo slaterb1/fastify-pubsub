@@ -224,3 +224,70 @@ test('Registering new subscriber without function for subAction fails', async (t
 
   await fastify.close()
 })
+
+test('Register default subscriber on new namespace has decorators under that namespace', async (t) => {
+  const fastify = Fastify()
+  await fastify.register(fastifyPubsub, {
+    channels: ['ch1'],
+    namespace: 'test',
+    config: {
+      host: '127.0.0.1'
+    }
+  })
+  t.ok(fastify.test.subscribe)
+  t.ok(fastify.test.endSubscription)
+  t.notOk(fastify.subscribe)
+  t.notOk(fastify.endSubscription)
+
+  await fastify.close()
+})
+
+test('Add/remove subscriber under new namespace', async (t) => {
+  const fastify = Fastify()
+  await fastify.register(fastifyPubsub, {
+    channels: ['ch1'],
+    namespace: 'test',
+    config: {
+      host: '127.0.0.1'
+    }
+  })
+  t.ok(fastify.test.subscribe)
+  t.ok(fastify.test.endSubscription)
+  t.notOk(fastify.subscribe)
+  t.notOk(fastify.endSubscription)
+
+  const name = await fastify.test.subscribe(null, 'ch1', 'ch2')
+  t.equal(Object.keys(fastify.subscribers).length, 2)
+  t.same(name, Object.keys(fastify.subscribers)[1])
+
+  await fastify.test.endSubscription(name)
+  t.equal(Object.keys(fastify.subscribers).length, 1)
+
+  await fastify.close()
+})
+
+test('Colliding namespace fails', async (t) => {
+  const fastify = Fastify()
+  const testError = new Error('Namespace is already taken, choose another for this pubsub plugin')
+  await fastify.register(fastifyPubsub, {
+    channels: ['ch1'],
+    namespace: 'test',
+    config: {
+      host: '127.0.0.1'
+    }
+  })
+
+  try {
+    await fastify.register(fastifyPubsub, {
+      channels: ['ch1'],
+      namespace: 'test',
+      config: {
+        host: '127.0.0.1'
+      }
+    })
+  } catch (err) {
+    t.same(err, testError)
+  }
+
+  await fastify.close()
+})
