@@ -73,6 +73,7 @@ async function pubsubRedis(fastify, opts) {
     }
 
     // Allow on-demand subscriber allocation or removal
+    // namespace idea inspired by solution in fastify/fastify-redis to support multiple redis connections
     if (!namespace) {
       fastify.decorate('subscribe', newSubscriber)
       fastify.decorate('endSubscription', endSubscription)
