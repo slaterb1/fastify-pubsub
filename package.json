@@ -8,6 +8,8 @@
     "ioredis": "^4.28.2"
   },
   "devDependencies": {
+    "fastify": "^3.25.0",
+    "fastify-redis": "^4.3.3",
     "tap": "^15.0.9"
   },
   "scripts": {
