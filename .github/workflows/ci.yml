@@ -6,23 +6,21 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-versions: [10, 12, 14]
+        node-versions: [10.x, 12.x, 14.x, 15.x]
         redis-tag: [5, 6]
-      services:
-        redis:
-          image: redis:${{ matrix.redis-tag }}
-          ports:
-          - 6379:6379
-          steps:
-            - uses: actions/checkout@v2
 
-            - name: setup node instance
-              uses: actions/setup-node@v2
-              with:
-                node-version: ${{ matrix.node-version }}
+    services:
+      redis:
+        image: redis:${{ matrix.redis-tag }}
+        ports:
+        - 6379:6379
 
-            - name: install packages
-              run: npm i
-
-            - name: run tests
-              run: npm test
+    steps:
+      - uses: actions/checkout@v2
+      - name: use node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: install dependencies
+        run: npm ci
+      - run: npm test
