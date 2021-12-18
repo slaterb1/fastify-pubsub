@@ -45,3 +45,28 @@ module.exports = async function (fastify, opts) {
   })
 }
 ```
+
+## Namespaces
+If you supply a `namespace` option to `fastify-pubsub` the decorators will be under the namespace name instead of just fastify.
+
+```js
+'use strict'
+
+const fp = require('fastify-plugin')
+
+module.exports = fp(async function (fastify, opts) {
+  fastify.register(require('fastify-pubsub'), {
+    channels: ['ch1', 'ch2'],
+    subAction: (ch, msg) => {
+      console.log(`${ch}: ${msg}`)
+    },
+    namespace: 'labs',
+    config: {
+      host: '127.0.0.1'
+      port: 5555
+    }
+  })
+})
+```
+
+You can now add subscribers to this redis connection with `fastify.labs.subscribe` or remove with `fastify.labs.endSubscription`
