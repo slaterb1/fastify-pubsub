@@ -9,6 +9,7 @@ async function pubsubRedis(fastify, opts) {
     channels,
     subAction,
     url,
+    namespace
   } = opts
 
   // Private inner function to subscribe to channels passed for new Redis subscriber.
@@ -71,11 +72,18 @@ async function pubsubRedis(fastify, opts) {
       await newSubscriber(subAction, ...channels)
     }
 
-    // Allow on-demand subscriber allocation
-    fastify.decorate('subscribe', newSubscriber)
-
-    // Allow on-demand subscriber removal
-    fastify.decorate('endSubscription', endSubscription)
+    // Allow on-demand subscriber allocation or removal
+    // namespace idea inspired by solution in fastify/fastify-redis to support multiple redis connections
+    if (!namespace) {
+      fastify.decorate('subscribe', newSubscriber)
+      fastify.decorate('endSubscription', endSubscription)
+    } else if (namespace && fastify[namespace]) {
+      throw new Error('Namespace is already taken, choose another for this pubsub plugin')
+    } else {
+      fastify[namespace] = {}
+      fastify[namespace].subscribe = newSubscriber
+      fastify[namespace].endSubscription = endSubscription
+    }
 
     // Clean up on application close
     fastify.addHook('onClose', close)
