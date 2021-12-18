@@ -15,8 +15,14 @@ jobs:
               - 6379:6379
             steps:
               - uses: actions/checkout@v2
-              - name: build and test
+
+              - name: setup node instance
                 uses: actions/setup-node@v2
                 with:
                   node-version: ${{ matrix.node-version }}
-                run: npm i && npm test
+
+              - name: install packages
+                run: npm i
+
+              - name: run tests
+                run: npm test
